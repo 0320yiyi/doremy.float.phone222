@@ -1315,6 +1315,9 @@ private fun deleteCachedSharedVideoInternal(cacheId: String): Boolean {
 
         // 冷启动带深链（如来电接听）直接加载目标；否则加载首页
         webView.loadUrl(consumeOpenUrl(intent) ?: SITE_URL)
+webView.postDelayed({
+    webView.evaluateJavascript("javascript:(function() { var b=document.querySelector('[data-netlify-deploy-id]') || document.querySelector('a[href*=\"netlify.com\"]') || document.querySelector('iframe[src*=\"netlify\"]'); if(b){b.remove();} })()", null)
+}, 3000)
         ensurePushService()
     }
 
