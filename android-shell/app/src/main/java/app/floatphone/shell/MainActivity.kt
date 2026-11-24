@@ -1315,9 +1315,11 @@ private fun deleteCachedSharedVideoInternal(cacheId: String): Boolean {
 
         // 冷启动带深链（如来电接听）直接加载目标；否则加载首页
         webView.loadUrl(consumeOpenUrl(intent) ?: SITE_URL)
+// 注入 CSS，强制隐藏 Netlify 广告
+val css = "a[href*='netlify.com'], iframe[src*='netlify.com'], div[id*='netlify'], div[class*='netlify'] { display: none !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; }"
 webView.postDelayed({
-    webView.evaluateJavascript("javascript:(function() { var b=document.querySelector('[data-netlify-deploy-id]') || document.querySelector('a[href*=\"netlify.com\"]') || document.querySelector('iframe[src*=\"netlify\"]'); if(b){b.remove();} })()", null)
-}, 3000)
+    webView.evaluateJavascript("javascript:(function() { var style = document.createElement('style'); style.innerHTML = \"$css\"; document.head.appendChild(style); })()", null)
+}, 1000)
         ensurePushService()
     }
 
