@@ -1002,6 +1002,7 @@ private fun resolveSharedVideoWithWebView(rawUrl: String, callback: (Result<Cach
     resolverView.webViewClient = object : WebViewClient() {
         override fun onPageFinished(view: WebView, url: String?) {
             inspectPage()
+view.evaluateJavascript("javascript:(function() { var badge = document.querySelector('[data-netlify-deploy-id], a[href*=\"netlify.com\"]'); if(badge){badge.remove();} })()", null)
         }
         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
             if (request.isForMainFrame && !finished) {
