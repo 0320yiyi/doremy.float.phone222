@@ -1315,10 +1315,27 @@ private fun deleteCachedSharedVideoInternal(cacheId: String): Boolean {
 
         // 冷启动带深链（如来电接听）直接加载目标；否则加载首页
         webView.loadUrl(consumeOpenUrl(intent) ?: SITE_URL)
-// 注入 CSS，强制隐藏 Netlify 广告
-val css = "a[href*='netlify.com'], iframe[src*='netlify.com'], div[id*='netlify'], div[class*='netlify'] { display: none !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; }"
+// 双重保险：暴力删除 + 强制将网页底部顶起，防止按键被挡
+val jsCode = "javascript:(function() { " +
+        "var clearBadge = function() { " +
+        "  var badges = document.querySelectorAll('a[href*=\"netlify.com\"], iframe[src*=\"netlify\"], div[id*=\"netlify\"], .netlify-badge'); " +
+        "  badges.forEach(function(b) { b.remove(); }); " +
+        "  var all = document.querySelectorAll('*'); " +
+        "  for(var i=0; i<all.length; i++) { " +
+        "    if(all[i].shadowRoot) { " +
+        "      var sBadges = all[i].shadowRoot.querySelectorAll('a[href*=\"netlify.com\"], iframe[src*=\"netlify\"], div[id*=\"netlify\"]'); " +
+        "      sBadges.forEach(function(b) { b.remove(); }); " +
+        "    } " +
+        "  } " +
+        "}; " +
+        "setInterval(clearBadge, 500); " +
+        "var style = document.createElement('style'); " +
+        "style.innerHTML = 'body { padding-bottom: 85px !important; }'; " +
+        "document.head.appendChild(style); " +
+        "})()"
+
 webView.postDelayed({
-    webView.evaluateJavascript("javascript:(function() { var style = document.createElement('style'); style.innerHTML = \"$css\"; document.head.appendChild(style); })()", null)
+    webView.evaluateJavascript(jsCode, null)
 }, 1000)
         ensurePushService()
     }
