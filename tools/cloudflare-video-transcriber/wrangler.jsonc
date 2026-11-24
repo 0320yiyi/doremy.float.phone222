@@ -6,7 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "ai": { "binding": "AI" },
   "vars": {
-    "ALLOWED_ORIGINS": "https://zfloat.netlify.app",
+    "ALLOWED_ORIGINS": "*",
     "ALLOWED_MEDIA_HOSTS": "REPLACE_WITH_YOUR_AUDIO_HOST"
   }
 }
